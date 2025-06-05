@@ -1,0 +1,111 @@
+Queries
+
+1. Create new animal
+
+INSERT INTO animal(name, animal_species_id, date_created, date_last_changed)
+VALUES (name, animal_species_id ,NOW() ,NOW());
+
+2. Create new species
+
+INSERT INTO animal_species(name, name_latin, animal_class_id, date_created, date_last_changed)
+VALUES (name, name_latin, @animal_class_id, NOW(), NOW());
+
+3. Creat new class
+
+INSERT INTO animal_class(name, date_created, date_last_changed)
+VALUES (name, NOW(), NOW());
+
+4. Read info about all animals, order by species
+
+SELECT a.id AS id, a.name AS animal_name, s.name AS species_name, s.name_latin AS name_latin, c.name AS class_name
+FROM animal a
+JOIN animal_species s 
+ON a.animal_species_id = s.id
+JOIN animal_class c 
+ON s.animal_class_id = c.id
+ORDER BY species_name ASC;
+
+5. Read all animals in a specific class, order by species
+
+SELECT a.id AS id, a.name AS animal, s.name AS species, s.name_latin AS latin
+FROM animal_class c
+JOIN animal_species s 
+ON c.id = s.animal_class_id
+JOIN animal a 
+ON s.id = a.animal_species_id
+WHERE c.name = name
+ORDER BY s.name ASC;
+
+6. Read all animals with name, order by name in alphabetic order
+
+SELECT a.id AS id, a.name AS animal_name, s.name AS species_name, s.name_latin AS name_latin, c.name AS class_name
+FROM animal a
+JOIN animal_species s 
+ON a.animal_species_id = s.id
+JOIN animal_class c 
+ON s.animal_class_id = c.id
+WHERE a.name IS NOT NULL
+ORDER BY animal_name ASC;
+
+7. Read - Search for a specifik animal
+
+SELECT a.id AS id, a.name AS animal_name, s.name AS species_name, s.name_latin AS latin_species, c.name AS class_name
+FROM animal a
+JOIN animal_species s 
+ON a.animal_species_id = s.id
+JOIN animal_class c 
+ON s.animal_class_id = c.id
+WHERE a.name ~* name;
+
+8. Read - get information about the number of existing animals (animals, species, classes)
+
+SELECT COUNT(a.id) AS animals, COUNT(DISTINCT s.id) AS species, COUNT(DISTINCT c.id) AS class
+FROM animal_class c
+JOIN animal_species s ON c.id = s.animal_class_id
+JOIN animal a ON s.id = a.animal_species_id
+
+9. Read - get information about how many animals there are in every class
+
+SELECT c.id, c.name, COUNT(*) 
+FROM animal_class c
+LEFT JOIN animal_species s 
+ON c.id = s.animal_class_id
+LEFT JOIN animal a 
+ON s.id = a.animal_species_id
+GROUP BY c.name, c.id
+ORDER BY c.name;
+
+10. Update information about an animal, including changing species and class
+
+UPDATE animal
+SET name = name, animal_species_id =
+(
+SELECT id
+FROM animal_species
+WHERE name = species
+)
+WHERE id = id;
+
+11. Delete an animal
+
+DELETE 
+FROM animal 
+WHERE id = id;
+
+12 + 14. Delete a species
+
+DELETE 
+FROM animal_species
+WHERE id = id;
+
+* Using delete cascade in database. Before deleting a message will show in the program, with info about underlying changes when deleting the species.
+
+13 + 14. Delete a class
+
+DELETE 
+FROM animal_class 
+WHERE id = id;
+
+* Using delete cascade in database. Before deleting a message will show in the program, with info about underlying changes when deleting the class.
+
+
